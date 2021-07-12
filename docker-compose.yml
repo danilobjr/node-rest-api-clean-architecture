@@ -1,0 +1,19 @@
+version: '3.9'
+services:
+  api:
+    image: node:14.16.0-alpine3.11
+    container_name: api
+    working_dir: /app
+    volumes:
+      - .:/app
+      - /etc/localtime:/etc/localtime:ro
+    env_file:
+      - .env
+    environment:
+      TZ: ${TIMEZONE}
+    logging:
+      driver: 'json-file'
+      options:
+        max-size: '10m'
+        max-file: '5'
+    restart: always

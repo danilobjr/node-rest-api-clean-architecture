@@ -1,0 +1,17 @@
+{
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": {
+    "lib": ["es2019"],
+    "target": "es2019",
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "skipLibCheck": true,
+    "allowJs": true,
+    "outDir": ".build",
+    "rootDir": "./"
+  },
+  "include": ["src/**/*.ts"],
+  "types": ["pagarme"],
+  "exclude": ["node_modules/**/*", "seed/**/*"]
+}

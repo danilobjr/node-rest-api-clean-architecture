@@ -1,0 +1,4430 @@
+openapi: 3.0.0
+info:
+  title: Ajuda Saude API
+  description: 'https://github.com/labsitio/ajuda-saude-api'
+  version: 1.0.0
+servers:
+  - url: 'https://api.ajudasaude.com.br'
+paths:
+  /v1/users/shared/set-new-password:
+    post:
+      summary: Set a new password for User
+      operationId: sharedSetNewPassword
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SharedSetNewPasswordRequestBody'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SharedAuthenticatedUserResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /v1/users/admin/signin:
+    post:
+      summary: Log Admin User in
+      operationId: adminSignIn
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SharedSignInRequestBody'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SharedAuthenticatedUserResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /v1/users/admin/validate-password-recovery-token:
+    get:
+      summary: Validate if token is still available
+      operationId: adminValidatePasswordRecoveryToken
+      parameters:
+        - in: query
+          name: token
+          required: true
+          description: Token sent to user when he asked for a new password
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminValidatePasswordRecoveryTokenResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /v1/users/admin/forgot-password:
+    post:
+      summary: Send an email with link to authorize user to change his password
+      operationId: adminForgotPassword
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AdminForgotPasswordRequest'
+      responses:
+        '200':
+          description: OK
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /v1/users/admin:
+    get:
+      summary: List Administrator users
+      operationId: adminUserList
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: searchTerm
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: limit
+          required: false
+          schema:
+            type: number
+        - in: query
+          name: skip
+          required: false
+          schema:
+            type: number
+        - in: query
+          name: sortBy
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: ordering
+          required: false
+          schema:
+            type: string
+            enum: [Ascending, Descending]
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminUserListResponse'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    post:
+      summary: Create an Administrator user
+      operationId: adminUserCreate
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AdminUserCreateRequest'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminUserCreateResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /v1/users/admin/{_id}:
+    get:
+      summary: User details
+      operationId: adminUserDetails
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: _id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminUserUpdateOrDetailsResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    patch:
+      summary: Update an user
+      operationId: adminUserUpdate
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: _id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AdminUserCreateRequest'
+      responses:
+        '200':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminUserUpdateOrDetailsResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /v1/users/admin/cancel-plan:
+    post:
+      summary: Cancel a user plan
+      operationId: adminCancelUserPlan
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AdminUserCancelPlanRequest'
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminUserCancelPlanResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /v1/medicine-doctors/admin:
+    get:
+      summary: List medicine doctors
+      operationId: adminMedicineDoctorList
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: searchTerm
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: limit
+          required: false
+          schema:
+            type: number
+        - in: query
+          name: skip
+          required: false
+          schema:
+            type: number
+        - in: query
+          name: sortBy
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: ordering
+          required: false
+          schema:
+            type: string
+            enum: [Ascending, Descending]
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminMedicineDoctorsListResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    post:
+      summary: Create medicine doctor
+      operationId: adminMedicineDoctorCreate
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/AdminMedicineDoctorCreateRequest'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminMedicineDoctorCreateResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /v1/medicine-doctors/admin/{_id}:
+    get:
+      summary: Retrieve medicine doctor details
+      operationId: adminMedicineDoctorDetails
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: _id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminMedicineDoctorDetailsResponse'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    patch:
+      summary: Update an existing medicine doctor
+      operationId: adminMedicineDoctorUpdate
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: _id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AdminMedicineDoctorUpdateRequest'
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminMedicineDoctorUpdateResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    delete:
+      summary: Delete a medicine doctor
+      operationId: adminMedicineDoctorDelete
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: _id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          $ref: '#/components/responses/NoContent'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /v1/body-parts/admin:
+    get:
+      summary: List body parts
+      operationId: adminBodyPartList
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: searchTerm
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: limit
+          required: false
+          schema:
+            type: number
+        - in: query
+          name: skip
+          required: false
+          schema:
+            type: number
+        - in: query
+          name: sortBy
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: ordering
+          required: false
+          schema:
+            type: string
+            enum: [Ascending, Descending]
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminBodyPartListResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    post:
+      summary: Create body part
+      operationId: adminBodyPartCreate
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/AdminBodyPartCreateRequest'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminBodyPartCreateResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /v1/body-parts/admin/{_id}:
+    get:
+      summary: Retrieve body part details
+      operationId: adminBodyPartDetails
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: _id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminBodyPartDetailsResponse'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    patch:
+      summary: Update an existing body part
+      operationId: adminBodyPartUpdate
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: _id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AdminBodyPartUpdateRequest'
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminBodyPartUpdateResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    delete:
+      summary: Delete a body part
+      operationId: adminBodyPartDelete
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: _id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          $ref: '#/components/responses/NoContent'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /v1/diagnostics/admin:
+    get:
+      summary: List diagnostics
+      operationId: adminDiagnosticList
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: searchTerm
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: limit
+          required: false
+          schema:
+            type: number
+        - in: query
+          name: skip
+          required: false
+          schema:
+            type: number
+        - in: query
+          name: sortBy
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: ordering
+          required: false
+          schema:
+            type: string
+            enum: [Ascending, Descending]
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminDiagnosticListResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    post:
+      summary: Create diagnostic
+      operationId: adminDiagnosticCreate
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/AdminDiagnosticCreateRequest'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminDiagnosticCreateResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /v1/diagnostics/admin/{_id}:
+    get:
+      summary: Retrieve diagnostic details
+      operationId: adminDiagnosticDetails
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: _id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminDiagnosticDetailsResponse'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    patch:
+      summary: Update an existing diagnostic
+      operationId: adminDiagnosticUpdate
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: _id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AdminDiagnosticUpdateRequest'
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminDiagnosticUpdateResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    delete:
+      summary: Delete a diagnostic
+      operationId: adminDiagnosticDelete
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: _id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          $ref: '#/components/responses/NoContent'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /v1/series/admin:
+    get:
+      summary: List series
+      operationId: adminSeriesList
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: searchTerm
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: limit
+          required: false
+          schema:
+            type: number
+        - in: query
+          name: skip
+          required: false
+          schema:
+            type: number
+        - in: query
+          name: sortBy
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: ordering
+          required: false
+          schema:
+            type: string
+            enum: [Ascending, Descending]
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminSeriesListResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    post:
+      summary: Create series
+      operationId: adminSeriesCreate
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/AdminSeriesCreateRequest'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminSeriesCreateResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /v1/series/admin/{_id}:
+    get:
+      summary: Retrieve series details
+      operationId: adminSeriesDetails
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: _id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminSeriesDetailsResponse'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    patch:
+      summary: Update an existing series
+      operationId: adminSeriesUpdate
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: _id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AdminSeriesUpdateRequest'
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminSeriesUpdateResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    delete:
+      summary: Delete a series
+      operationId: adminSeriesDelete
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: _id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          $ref: '#/components/responses/NoContent'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /v1/videos/admin:
+    get:
+      summary: List videos
+      operationId: adminVideoList
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: searchTerm
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: limit
+          required: false
+          schema:
+            type: number
+        - in: query
+          name: skip
+          required: false
+          schema:
+            type: number
+        - in: query
+          name: sortBy
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: ordering
+          required: false
+          schema:
+            type: string
+            enum: [Ascending, Descending]
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminVideoListResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    post:
+      summary: Create video
+      operationId: adminVideoCreate
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/AdminVideoCreateRequest'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminVideoCreateResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /v1/videos/admin/{_id}:
+    get:
+      summary: Retrieve video details
+      operationId: adminVideoDetails
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: _id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminVideoDetailsResponse'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    patch:
+      summary: Update an existing video
+      operationId: adminVideoUpdate
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: _id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AdminVideoUpdateRequest'
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminVideoUpdateResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    delete:
+      summary: Delete a video
+      operationId: adminVideoDelete
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: _id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          $ref: '#/components/responses/NoContent'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /v1/sections/admin:
+    get:
+      summary: List sections
+      operationId: adminSectionList
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: searchTerm
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: limit
+          required: false
+          schema:
+            type: number
+        - in: query
+          name: skip
+          required: false
+          schema:
+            type: number
+        - in: query
+          name: sortBy
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: ordering
+          required: false
+          schema:
+            type: string
+            enum: [Ascending, Descending]
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminSectionListResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    post:
+      summary: Create a new section
+      operationId: adminSectionCreate
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AdminSectionCreateRequest'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminSectionCreateResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /v1/sections/admin/{_id}:
+    get:
+      summary: Get a section by id
+      operationId: adminSectionDetails
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: _id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminSectionDetailsResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    patch:
+      summary: Update an existing section
+      operationId: adminSectionUpdate
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: _id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AdminSectionUpdateRequest'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminSectionUpdateResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    delete:
+      summary: Delete a section
+      operationId: adminSectionDelete
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: _id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          $ref: '#/components/responses/NoContent'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /v1/users/app/signin:
+    post:
+      summary: Log User in
+      operationId: appSignIn
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SharedSignInRequestBody'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SharedAuthenticatedUserResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /v1/users/app/signup:
+    post:
+      summary: Create a common user
+      operationId: appSingUp
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AppSignUpRequestBody'
+      responses:
+        '203':
+          description: Created
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /v1/users/app/activate:
+    get:
+      summary: Activate new user through security code
+      operationId: appActivateNewUser
+      parameters:
+        - in: query
+          name: cellphone
+          required: true
+          description: User cellphone
+          schema:
+            type: string
+        - in: query
+          name: code
+          required: true
+          description: Security code sent to user when signup is successful
+          schema:
+            type: string
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SharedAuthenticatedUserResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /v1/users/app/resend-activation-code:
+    get:
+      summary: Resend security code
+      operationId: appResendActivationCode
+      parameters:
+        - in: query
+          name: cellphone
+          required: true
+          description: User cellphone
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /v1/users/app/forgot-password:
+    post:
+      summary: Send an email or SMS with link to authorize user to change his password
+      operationId: appForgotPassword
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AppForgotPasswordRequestBody'
+      responses:
+        '200':
+          description: OK
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /v1/users/app/validate-password-recovery-code:
+    get:
+      summary: Validate if security code is still available
+      operationId: appValidatePasswordRecoveryCode
+      parameters:
+        - in: query
+          name: code
+          required: true
+          description: Security code sent to user when he asked for a new password
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AppValidatePasswordRecoveryCodeResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /v1/users/app/my-data/{_id}:
+    patch:
+      summary: Update existing user
+      operationId: appUserUpdate
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: _id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AppUserUpdateRequest'
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AppUserUpdateResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /v1/users/app/plan/change:
+    patch:
+      summary: Change plan of authenticated user
+      operationId: appUserChangePlan
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AppUserChangePlanRequest'
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AppUserChangePlanResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /v1/coupons:
+    post:
+      summary: Create coupons
+      operationId: couponsCreate
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CouponsCreateRequest'
+      responses:
+        '200':
+          description: Ok
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /v1/coupons/check:
+    get:
+      summary: Check coupon availability
+      operationId: couponsCheckAvailability
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: code
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: planId
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CouponCheckAvailabilityResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /v1/reports/coupons/used-by-period:
+    get:
+      summary: Retrieve coupon data for Coupon Used by Period Report
+      operationId: reportsCouponsUsedByPeriod
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: initialDate
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: finalDate
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReportsCouponsUsedByPeriodResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /v1/diseases:
+    get:
+      summary: List diseases
+      operationId: diseaseList
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: searchTerm
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: limit
+          required: false
+          schema:
+            type: number
+        - in: query
+          name: skip
+          required: false
+          schema:
+            type: number
+        - in: query
+          name: sortBy
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: ordering
+          required: false
+          schema:
+            type: string
+            enum: [Ascending, Descending]
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DiseaseListResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /v1/medicines:
+    get:
+      summary: List medicines
+      operationId: medicineList
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: searchTerm
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: limit
+          required: false
+          schema:
+            type: number
+        - in: query
+          name: skip
+          required: false
+          schema:
+            type: number
+        - in: query
+          name: sortBy
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: ordering
+          required: false
+          schema:
+            type: string
+            enum: [Ascending, Descending]
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MedicineListResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /v1/plans:
+    get:
+      summary: Get plans
+      operationId: planGet
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlanGetResponse'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /v1/subscription/user-data:
+    patch:
+      summary: Update only relevant user data for payment
+      operationId: subscriptionUpdateUserData
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AppSubscriptionsUpdateUserDataRequestBody'
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AppUserUpdateResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /v1/subscription/term-of-use/current:
+    get:
+      summary: Get current term of use
+      operationId: subscriptionGetCurrentTermOfUse
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AppSubscriptionsGetCurrentTermOfUseResponse'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /v1/subscription/subscribe-premium:
+    patch:
+      summary: Subscribe user to a Premium plan
+      operationId: subscriptionSubscribePremium
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SubscriptionSubscribeToPremiumPlanRequestBody'
+      responses:
+        '200':
+          description: Ok
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /v1/videos/shared/search:
+    get:
+      summary: Get videos by a search term
+      operationId: appSearchVideo
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: searchTerm
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AppSearchVideoResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /v1/videos/shared/player/{type}/{_id}:
+    get:
+      summary: Get videos by a search term
+      operationId: appPlayVideo
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: type
+          required: true
+          schema:
+            type: string
+            enum:
+              - video
+              - bodyPart
+              - diagnostic
+              - series
+        - in: path
+          name: _id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/Series'
+                  - $ref: '#/components/schemas/Video'
+                  - type: array
+                    items:
+                      $ref: '#/components/schemas/Video'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /v1/videos/shared/watch-later/{videoId}:
+    post:
+      summary: Set video to be watched later
+      operationId: appWatchLater
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: videoId
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AppWatchLaterRequest'
+      responses:
+        '200':
+          description: OK
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /v1/videos/shared/interaction/{videoId}:
+    post:
+      summary: Set when user interacted with a video
+      operationId: appUserVideoInteraction
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: videoId
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - in: query
+          name: interactionType
+          required: true
+          schema:
+            type: string
+            enum:
+              - started
+              - paused
+              - finished
+        - in: query
+          name: pausedAtInSeconds
+          description: Time when video is paused at. Measured in seconds
+          required: false
+          schema:
+            type: number
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AppUserVideoInteractionRequest'
+      responses:
+        '200':
+          description: OK
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /v1/self-care/shared/new-releases:
+    get:
+      summary: Get the last 100 videos
+      operationId: appSelfCareNewReleases
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: skip
+          required: false
+          schema:
+            type: number
+        - in: query
+          name: limit
+          required: false
+          schema:
+            type: number
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AppSelfCareResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /v1/self-care/shared/for-you:
+    get:
+      summary: Get videos and series based on age and gender
+      operationId: appSelfCareForYou
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AppSelfCareResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /v1/self-care/shared/user-interests:
+    get:
+      summary: Get videos and series related to user's interest
+      operationId: appSelfCareUserInterests
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: skip
+          required: false
+          schema:
+            type: number
+        - in: query
+          name: limit
+          required: false
+          schema:
+            type: number
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AppSelfCareResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /v1/self-care/shared/watch-later:
+    get:
+      summary: Get videos and series marked as 'Assistir depois'
+      operationId: appSelfCareWatchLater
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: skip
+          required: false
+          schema:
+            type: number
+        - in: query
+          name: limit
+          required: false
+          schema:
+            type: number
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AppSelfCareResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /v1/self-care/shared/finish-watching:
+    get:
+      summary: Get videos that user not finished watching yet
+      operationId: appSelfCareFinishWatching
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: skip
+          required: false
+          schema:
+            type: number
+        - in: query
+          name: limit
+          required: false
+          schema:
+            type: number
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AppSelfCareResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /v1/self-care/shared/diagnostics:
+    get:
+      summary: Get a list of diagnostics
+      operationId: appSelfCareDiagnostics
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: skip
+          required: false
+          schema:
+            type: number
+        - in: query
+          name: limit
+          required: false
+          schema:
+            type: number
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AppSelfCareResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /v1/self-care/shared/body-parts:
+    get:
+      summary: Get a list of body parts
+      operationId: appSelfCareBodyParts
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: skip
+          required: false
+          schema:
+            type: number
+        - in: query
+          name: limit
+          required: false
+          schema:
+            type: number
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AppSelfCareResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /v1/self-care/shared/sections:
+    get:
+      summary: Get a list of sections
+      operationId: appSelfCareListSections
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: skip
+          required: false
+          schema:
+            type: number
+        - in: query
+          name: limit
+          required: false
+          schema:
+            type: number
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  _id:
+                    type: string
+                  title:
+                    type: string
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /v1/self-care/shared/sections/{_id}:
+    get:
+      summary: Get a section contente
+      operationId: appSelfCareSectionContent
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: _id
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - in: query
+          name: skip
+          required: false
+          schema:
+            type: number
+        - in: query
+          name: limit
+          required: false
+          schema:
+            type: number
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AppSelfCareResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /v1/health-form/questions/{_id}:
+    get:
+      summary: Get a question
+      operationId: healthFormQuestion
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: _id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthFormQuestionResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /v1/health-form/questions-flow:
+    get:
+      summary: Get a question flow
+      operationId: healthFormQuestionFlow
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthFormQuestionFlowResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /v1/health-form/categories:
+    get:
+      summary: List categories
+      operationId: healthFormCategoryList
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthFormCategoryListResponse'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /v1/health-form/answers:
+    get:
+      summary: Get health questionnaire by logged user
+      operationId: getHealthQuestionnaire
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthQuestionnaireResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    post:
+      summary: Save health questionnaire by logged user
+      operationId: saveHealthQuestionnaire
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SaveHealthQuestionnaireRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthQuestionnaireResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /v1/medical-record:
+    get:
+      summary: List medical records
+      operationId: userMedicalRecordGet
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserMedicalRecordGetResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /v1/utils/locations/shared/{uf}/cities:
+    get:
+      summary: Get cities by UF
+      operationId: appUtilsLocationsGetCitiesByUf
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: uf
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AppUtilsLocationsGetCitiesByUfResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /v1/utils/locations/shared/{zipCode}/info:
+    get:
+      summary: Get location info by CEP
+      operationId: utilsLocationsGetLocationInfoByCep
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: zipCode
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UtilsLocationsGetLocationInfoByCepResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  responses:
+    Accepted:
+      description: Accepted
+    BadRequest:
+      description: BadRequest
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    Conflict:
+      description: Conflict
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    Forbidden:
+      description: Forbidden
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    InternalServerError:
+      description: Internal Server Error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    NoContent:
+      description: No Content
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    NotFound:
+      description: Not Found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    UnprocessableEntity:
+      description: Unprocessable Entity
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+  schemas:
+    SharedAuthenticatedUserResponse:
+      type: object
+      required:
+        - data
+      properties:
+        data:
+          type: object
+          required:
+            - accessToken
+            - user
+          properties:
+            accessToken:
+              type: string
+              description: Token that grants authorization to User on protected routes
+            user:
+              $ref: '#/components/schemas/User'
+    SharedSignInRequestBody:
+      type: object
+      required:
+        - login
+        - password
+      properties:
+        login:
+          type: string
+          description: It can be an Email, Cellphone or CPF
+        password:
+          type: string
+        keepSignedIn:
+          type: boolean
+    AdminValidatePasswordRecoveryTokenResponse:
+      type: object
+      required:
+        - data
+      properties:
+        data:
+          type: object
+          required:
+            - userId
+          properties:
+            userId:
+              type: string
+    AppValidatePasswordRecoveryCodeResponse:
+      type: object
+      required:
+        - data
+      properties:
+        data:
+          type: object
+          required:
+            - userId
+          properties:
+            userId:
+              type: string
+    PlanGetResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Plan'
+    SubscriptionSubscribeToPremiumPlanRequestBody:
+      type: object
+      required:
+        - planId
+        - termOfUseId
+        - couponCode
+      properties:
+        planId:
+          type: string
+        termOfUseId:
+          type: string
+        couponCode:
+          type: string
+    AppSubscriptionsUpdateUserDataRequestBody:
+      type: object
+      required:
+        - name
+        - cpf
+        - birthday
+        - cellphone
+        - email
+        - addressZipCode
+        - addressStreet
+        - addressNeighborhood
+        - addressState
+        - addressCity
+      properties:
+        name:
+          type: string
+        cpf:
+          type: string
+        birthday:
+          type: string
+        cellphone:
+          type: string
+        email:
+          type: string
+        addressZipCode:
+          type: string
+        addressStreet:
+          type: string
+        addressStreetNumber:
+          type: string
+        addressNeighborhood:
+          type: string
+        addressAdditionalInfo:
+          type: string
+        addressState:
+          $ref: '#/components/schemas/State'
+        addressCity:
+          type: string
+    AppUserUpdateResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/User'
+    AppUserChangePlanResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Payment'
+    AppSubscriptionsGetCurrentTermOfUseResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/TermOfUse'
+    SharedSetNewPasswordRequestBody:
+      type: object
+      required:
+        - userId
+        - password
+        - passwordConfirmation
+      properties:
+        userId:
+          type: string
+        password:
+          type: string
+        passwordConfirmation:
+          type: string
+    SharedVideoDto:
+      type: object
+      required:
+        - _id
+        - title
+        - url
+        - thumbnailUrl
+        - newRelease
+        - premium
+      properties:
+        _id:
+          type: string
+          format: uuid
+        title:
+          type: string
+        url:
+          type: string
+        thumbnailUrl:
+          type: string
+        newRelease:
+          type: boolean
+        premium:
+          type: boolean
+    AdminForgotPasswordRequest:
+      type: object
+      required:
+        - email
+      properties:
+        email:
+          type: string
+    AdminUserListResponse:
+      type: object
+      required:
+        - data
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/User'
+    AdminUserCreateRequest:
+      type: object
+      required:
+        - name
+        - birthday
+        - cellphone
+        - password
+        - passwordConfirmation
+        - role
+      properties:
+        name:
+          type: string
+        birthday:
+          type: string
+          description: A string date on ISO format
+          format: date
+        gender:
+          type: string
+          enum:
+            - male
+            - female
+        cpf:
+          type: string
+          minLength: 11
+          maxLength: 11
+        cellphone:
+          type: string
+          minLength: 10
+          maxLength: 11
+        email:
+          type: string
+        zipCode:
+          type: string
+          minLength: 8
+          maxLength: 8
+        password:
+          type: string
+          minLength: 8
+        passwordConfirmation:
+          type: string
+        role:
+          type: string
+    AdminUserCreateResponse:
+      type: object
+      required:
+        - data
+      properties:
+        data:
+          type: object
+          required:
+            - createdUser
+          properties:
+            createdUser:
+              $ref: '#/components/schemas/User'
+    AdminUserCancelPlanRequest:
+      type: object
+      required:
+        - userId
+      properties:
+        userId:
+          type: string
+          format: uuid
+    AdminUserCancelPlanResponse:
+      type: object
+      required:
+        - data
+      properties:
+        data:
+          type: object
+          required:
+            - message
+          properties:
+            message:
+              type: string
+            succeededPayment:
+              $ref: '#/components/schemas/Payment'
+    AdminUserUpdateOrDetailsResponse:
+      type: object
+      required:
+        - data
+      properties:
+        data:
+          type: object
+          required:
+            - contractualFine
+            - user
+            - paymentHistory
+          properties:
+            contractualFine:
+              type: number
+            user:
+              $ref: '#/components/schemas/User'
+            paymentHistory:
+              type: array
+              items:
+                $ref: '#/components/schemas/Payment'
+    AdminMedicineDoctorsListResponse:
+      type: object
+      required:
+        - data
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/MedicineDoctor'
+    AdminMedicineDoctorDetailsResponse:
+      type: object
+      required:
+        - data
+      properties:
+        data:
+          $ref: '#/components/schemas/MedicineDoctor'
+    AdminMedicineDoctorCreateRequest:
+      type: object
+      required:
+        - name
+        - crm
+        - specialty
+        - photoFile
+      properties:
+        name:
+          type: string
+        crm:
+          type: string
+        specialty:
+          type: string
+        profilePhotoFile:
+          type: string
+          format: binary
+    AdminMedicineDoctorCreateResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/MedicineDoctor'
+    AdminMedicineDoctorUpdateRequest:
+      type: object
+      required:
+        - name
+        - crm
+        - specialty
+        - profilePhotoUrl
+      properties:
+        name:
+          type: string
+        crm:
+          type: string
+        specialty:
+          type: string
+        profilePhotoUrl:
+          type: string
+        profilePhotoFile:
+          type: string
+          format: binary
+    AdminMedicineDoctorUpdateResponse:
+      type: object
+      required:
+        - data
+      properties:
+        data:
+          $ref: '#/components/schemas/MedicineDoctor'
+    AdminBodyPartListResponse:
+      type: object
+      required:
+        - data
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/BodyPart'
+    AdminBodyPartDetailsResponse:
+      type: object
+      required:
+        - data
+      properties:
+        data:
+          $ref: '#/components/schemas/BodyPart'
+    AdminBodyPartCreateRequest:
+      type: object
+      required:
+        - title
+        - subject
+        - bannerFile
+      properties:
+        title:
+          type: string
+        subject:
+          type: string
+        bannerFile:
+          type: string
+          format: binary
+    AdminBodyPartCreateResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/BodyPart'
+    AdminBodyPartUpdateRequest:
+      type: object
+      required:
+        - title
+        - subject
+        - bannerUrl
+      properties:
+        title:
+          type: string
+        subject:
+          type: string
+        bannerUrl:
+          type: string
+        bannerFile:
+          type: string
+          format: binary
+    AdminBodyPartUpdateResponse:
+      type: object
+      required:
+        - data
+      properties:
+        data:
+          $ref: '#/components/schemas/BodyPart'
+    AdminDiagnosticListResponse:
+      type: object
+      required:
+        - data
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Diagnostic'
+    AdminDiagnosticDetailsResponse:
+      type: object
+      required:
+        - data
+      properties:
+        data:
+          $ref: '#/components/schemas/Diagnostic'
+    AdminDiagnosticCreateRequest:
+      type: object
+      required:
+        - title
+        - subject
+        - bannerFile
+      properties:
+        title:
+          type: string
+        subject:
+          type: string
+        bannerFile:
+          type: string
+          format: binary
+    AdminDiagnosticCreateResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/Diagnostic'
+    AdminDiagnosticUpdateRequest:
+      type: object
+      required:
+        - title
+        - subject
+        - bannerUrl
+      properties:
+        title:
+          type: string
+        subject:
+          type: string
+        bannerUrl:
+          type: string
+        bannerFile:
+          type: string
+          format: binary
+    AdminDiagnosticUpdateResponse:
+      type: object
+      required:
+        - data
+      properties:
+        data:
+          $ref: '#/components/schemas/Diagnostic'
+    AdminVideoListResponse:
+      type: object
+      required:
+        - data
+      properties:
+        data:
+          type: array
+          items:
+            type: object
+            properties:
+              _id:
+                type: string
+                format: uuid
+              title:
+                type: string
+              thumbnailUrl:
+                type: string
+                format: uri
+              createdAt:
+                type: string
+                format: date
+    AdminVideoCreateRequest:
+      type: object
+      required:
+        - title
+        - description
+        - minAgeRecommendation
+        - maxAgeRecommendation
+        - genderRecommendation
+        - relatedMedicineDoctors
+        - relatedTerms
+        - thumbnail
+        - video
+        - premium
+      properties:
+        title:
+          type: string
+        description:
+          type: string
+        minAgeRecommendation:
+          type: number
+        maxAgeRecommendation:
+          type: number
+        genderRecommendation:
+          type: array
+          items:
+            type: string
+            enum:
+              - male
+              - female
+        series:
+          type: array
+          items:
+            type: string
+        bodyParts:
+          type: array
+          items:
+            type: string
+        diagnostics:
+          type: array
+          items:
+            type: string
+        sections:
+          type: array
+          items:
+            type: string
+        relatedMedicineDoctors:
+          type: array
+          items:
+            type: string
+        relatedTerms:
+          type: array
+          items:
+            type: string
+        thumbnailFile:
+          type: string
+          format: binary
+        videoFile:
+          type: string
+          format: binary
+        premium:
+          type: boolean
+    AdminVideoCreateResponse:
+      type: object
+      required:
+        - data
+      properties:
+        data:
+          type: object
+          properties:
+            _id:
+              type: string
+              format: uuid
+            title:
+              type: string
+            description:
+              type: string
+            minAgeRecommendation:
+              type: number
+            maxAgeRecommendation:
+              type: number
+            genderRecommendation:
+              type: array
+              items:
+                type: string
+                enum:
+                  - male
+                  - female
+            views:
+              type: number
+            series:
+              type: array
+              items:
+                type: string
+            bodyParts:
+              type: array
+              items:
+                type: string
+            diagnostics:
+              type: array
+              items:
+                type: string
+            sections:
+              type: array
+              items:
+                type: string
+            thumbnailUrl:
+              type: string
+              format: uri
+            url:
+              type: string
+              format: uri
+            relatedTerms:
+              type: array
+              items:
+                type: string
+            relatedMedicineDoctors:
+              type: array
+              items:
+                type: string
+            premium:
+              type: boolean
+            createdAt:
+              type: string
+              format: date
+            updatedAt:
+              type: string
+              format: date
+    AdminVideoDetailsResponse:
+      type: object
+      required:
+        - data
+      properties:
+        data:
+          type: object
+          properties:
+            _id:
+              type: string
+              format: uuid
+            title:
+              type: string
+            description:
+              type: string
+            minAgeRecommendation:
+              type: number
+            maxAgeRecommendation:
+              type: number
+            genderRecommendation:
+              type: array
+              items:
+                type: string
+                enum:
+                  - male
+                  - female
+            views:
+              type: number
+            series:
+              type: array
+              items:
+                type: string
+            bodyParts:
+              type: array
+              items:
+                type: string
+            diagnostics:
+              type: array
+              items:
+                type: string
+            sections:
+              type: array
+              items:
+                type: string
+            thumbnailUrl:
+              type: string
+              format: uri
+            url:
+              type: string
+              format: uri
+            relatedTerms:
+              type: array
+              items:
+                type: string
+            relatedMedicineDoctors:
+              type: array
+              items:
+                type: string
+            premium:
+              type: boolean
+            createdAt:
+              type: string
+              format: date
+            updatedAt:
+              type: string
+              format: date
+    AppUserUpdateRequest:
+      type: object
+      required:
+        - name
+        - birthday
+        - gender
+        - cellphone
+        - email
+        - cpf
+      properties:
+        name:
+          type: string
+        birthday:
+          type: string
+          format: date
+        gender:
+          type: string
+          enum:
+            - male
+            - female
+        cellphone:
+          type: string
+        email:
+          type: string
+          format: email
+        cpf:
+          type: string
+        addressZipCode:
+          type: string
+          minLength: 8
+          maxLength: 8
+    AppUserChangePlanRequest:
+      type: object
+      required:
+        - newPlanId
+      properties:
+        newPlanId:
+          type: string
+    CouponsCreateRequest:
+      type: object
+      required:
+        - code
+        - freeGracePeriod
+        - registrationFeePercentage
+        - installmentPercentage
+        - quantity
+        - duration
+        - redeemExpirationDate
+        - planName
+        - planType
+      properties:
+        code:
+          type: string
+        freeGracePeriod:
+          type: string
+        registrationFeePercentage:
+          type: string
+        installmentPercentage:
+          type: string
+        quantity:
+          type: string
+        duration:
+          type: string
+        redeemExpirationDate:
+          type: string
+        planName:
+          type: string
+        planType:
+          type: string
+    AdminVideoUpdateRequest:
+      type: object
+      required:
+        - title
+        - description
+        - minAgeRecommendation
+        - maxAgeRecommendation
+        - genderRecommendation
+        - thumbnailUrl
+        - url
+        - relatedTerms
+        - relatedMedicineDoctors
+        - premium
+      properties:
+        title:
+          type: string
+        description:
+          type: string
+        minAgeRecommendation:
+          type: number
+        maxAgeRecommendation:
+          type: number
+        genderRecommendation:
+          type: array
+          items:
+            type: string
+            enum:
+              - male
+              - female
+        series:
+          type: array
+          items:
+            type: string
+        bodyParts:
+          type: array
+          items:
+            type: string
+        diagnostics:
+          type: array
+          items:
+            type: string
+        sections:
+          type: array
+          items:
+            type: string
+        thumbnailUrl:
+          type: string
+        url:
+          type: string
+        relatedTerms:
+          type: array
+          items:
+            type: string
+        relatedMedicineDoctors:
+          type: array
+          items:
+            type: string
+        premium:
+          type: boolean
+        thumbnailFile:
+          type: string
+          format: binary
+        videoFile:
+          type: string
+          format: binary
+    AdminVideoUpdateResponse:
+      type: object
+      required:
+        - data
+      properties:
+        data:
+          type: object
+          properties:
+            _id:
+              type: string
+              format: uuid
+            title:
+              type: string
+            description:
+              type: string
+            minAgeRecommendation:
+              type: number
+            maxAgeRecommendation:
+              type: number
+            genderRecommendation:
+              type: array
+              items:
+                type: string
+                enum:
+                  - male
+                  - female
+            views:
+              type: number
+            series:
+              type: array
+              items:
+                type: string
+            bodyParts:
+              type: array
+              items:
+                type: string
+            diagnostics:
+              type: array
+              items:
+                type: string
+            sections:
+              type: array
+              items:
+                type: string
+            thumbnailUrl:
+              type: string
+              format: uri
+            url:
+              type: string
+              format: uri
+            relatedTerms:
+              type: array
+              items:
+                type: string
+            relatedMedicineDoctors:
+              type: array
+              items:
+                type: string
+            premium:
+              type: boolean
+            createdAt:
+              type: string
+              format: date
+            updatedAt:
+              type: string
+              format: date
+    AdminSeriesListResponse:
+      type: object
+      required:
+        - data
+      properties:
+        data:
+          type: array
+          items:
+            type: object
+            properties:
+              _id:
+                type: string
+                format: uuid
+              title:
+                type: string
+              bannerUrl:
+                type: string
+                format: uri
+              createdAt:
+                type: string
+                format: date
+    AdminSeriesCreateRequest:
+      type: object
+      required:
+        - title
+        - subject
+        - minAgeRecommendation
+        - maxAgeRecommendation
+        - genderRecommendation
+        - relatedTerms
+        - bannerFile
+      properties:
+        title:
+          type: string
+        subject:
+          type: string
+        minAgeRecommendation:
+          type: number
+        maxAgeRecommendation:
+          type: number
+        genderRecommendation:
+          type: array
+          items:
+            type: string
+            enum:
+              - male
+              - female
+        relatedTerms:
+          type: array
+          items:
+            type: string
+        bannerFile:
+          type: string
+          format: binary
+    AdminSeriesCreateResponse:
+      type: object
+      required:
+        - data
+      properties:
+        data:
+          type: object
+          properties:
+            _id:
+              type: string
+              format: uuid
+            title:
+              type: string
+            subject:
+              type: string
+            minAgeRecommendation:
+              type: number
+            maxAgeRecommendation:
+              type: number
+            genderRecommendation:
+              type: array
+              items:
+                type: string
+                enum:
+                  - male
+                  - female
+            bannerUrl:
+              type: string
+              format: uri
+            relatedTerms:
+              type: array
+              items:
+                type: string
+            createdAt:
+              type: string
+              format: date
+            updatedAt:
+              type: string
+              format: date
+    AdminSeriesDetailsResponse:
+      type: object
+      required:
+        - data
+      properties:
+        data:
+          type: object
+          properties:
+            _id:
+              type: string
+              format: uuid
+            title:
+              type: string
+            subject:
+              type: string
+            minAgeRecommendation:
+              type: number
+            maxAgeRecommendation:
+              type: number
+            genderRecommendation:
+              type: array
+              items:
+                type: string
+                enum:
+                  - male
+                  - female
+            bannerUrl:
+              type: string
+              format: uri
+            relatedTerms:
+              type: array
+              items:
+                type: string
+            createdAt:
+              type: string
+              format: date
+            updatedAt:
+              type: string
+              format: date
+    AdminSeriesUpdateRequest:
+      type: object
+      required:
+        - title
+        - subject
+        - minAgeRecommendation
+        - maxAgeRecommendation
+        - genderRecommendation
+        - bannerUrl
+        - relatedTerms
+      properties:
+        title:
+          type: string
+        subject:
+          type: string
+        minAgeRecommendation:
+          type: number
+        maxAgeRecommendation:
+          type: number
+        genderRecommendation:
+          type: array
+          items:
+            type: string
+            enum:
+              - male
+              - female
+        bannerUrl:
+          type: string
+          format: uri
+        relatedTerms:
+          type: array
+          items:
+            type: string
+        bannerFile:
+          type: string
+          format: binary
+    AdminSeriesUpdateResponse:
+      type: object
+      required:
+        - data
+      properties:
+        data:
+          type: object
+          properties:
+            _id:
+              type: string
+              format: uuid
+            title:
+              type: string
+            subject:
+              type: string
+            minAgeRecommendation:
+              type: number
+            maxAgeRecommendation:
+              type: number
+            genderRecommendation:
+              type: array
+              items:
+                type: string
+                enum:
+                  - male
+                  - female
+            bannerUrl:
+              type: string
+              format: uri
+            relatedTerms:
+              type: array
+              items:
+                type: string
+            createdAt:
+              type: string
+              format: date
+            updatedAt:
+              type: string
+              format: date
+    AdminSectionListResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Section'
+    CouponCheckAvailabilityResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          required:
+            - userShouldEnterCreditCardInfo
+            - registrationFeeDiscountPercentage
+            - installmentDiscountPercentage
+            - freeGracePeriod
+            - duration
+          properties:
+            userShouldEnterCreditCardInfo:
+              type: boolean
+            registrationFeeDiscountPercentage:
+              type: number
+            installmentDiscountPercentage:
+              type: number
+            freeGracePeriod:
+              type: boolean
+    ReportsCouponsUsedByPeriodResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            type: object
+            required:
+              - code
+              - quantity
+              - avaliableQuantity
+              - expiratinDate
+              - planName
+              - planType
+              - redeemedDate
+              - userName
+              - userEmail
+              - userCellphone
+            properties:
+              code:
+                type: string
+              quantity:
+                type: number
+              avaliableQuantity:
+                type: number
+              expiratinDate:
+                type: string
+                format: date
+              planName:
+                type: string
+              planType:
+                type: string
+              redeemedDate:
+                type: string
+                format: date
+              userName:
+                type: string
+              userEmail:
+                type: string
+              userCellphone:
+                type: string
+    DiseaseListResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Disease'
+    MedicineListResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Medicine'
+    AdminSectionCreateRequest:
+      type: object
+      required:
+        - title
+      properties:
+        title:
+          type: string
+        subject:
+          type: string
+    AdminSectionCreateResponse:
+      type: object
+      required:
+        - data
+      properties:
+        data:
+          $ref: '#/components/schemas/Section'
+    AdminSectionUpdateRequest:
+      type: object
+      required:
+        - title
+      properties:
+        title:
+          type: string
+        subject:
+          type: string
+    AdminSectionUpdateResponse:
+      type: object
+      required:
+        - data
+      properties:
+        data:
+          $ref: '#/components/schemas/Section'
+    AdminSectionDetailsResponse:
+      type: object
+      required:
+        - data
+      properties:
+        data:
+          $ref: '#/components/schemas/Section'
+    AppForgotPasswordRequestBody:
+      type: object
+      required:
+        - cellphoneOrEmail
+      properties:
+        cellphoneOrEmail:
+          type: string
+    AppSignUpRequestBody:
+      type: object
+      required:
+        - name
+        - birthday
+        - cellphone
+        - password
+        - passwordConfirmation
+        - role
+      properties:
+        name:
+          type: string
+        birthday:
+          type: string
+          description: A string date on ISO format
+          format: date
+        gender:
+          type: string
+          enum:
+            - male
+            - female
+        cpf:
+          type: string
+          minLength: 11
+          maxLength: 11
+        cellphone:
+          type: string
+          minLength: 10
+          maxLength: 11
+        email:
+          type: string
+          format: email
+        zipCode:
+          type: string
+          minLength: 8
+          maxLength: 8
+        password:
+          type: string
+          format: password
+          minLength: 8
+        passwordConfirmation:
+          type: string
+          format: password
+        role:
+          type: string
+    AppSelfCareResponse:
+      type: object
+      required:
+        - data
+      properties:
+        data:
+          type: array
+          items:
+            type: object
+            properties:
+              _id:
+                type: string
+                format: uuid
+              title:
+                type: string
+              imageUrl:
+                type: string
+                format: uri
+              premium:
+                type: boolean
+              newRelease:
+                type: boolean
+              type:
+                type: string
+                enum:
+                  - video
+                  - bodyPart
+                  - diagnostic
+                  - series
+    AppUtilsLocationsGetCitiesByUfResponse:
+      type: object
+      required:
+        - data
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/City'
+    UtilsLocationsGetLocationInfoByCepResponse:
+      type: object
+      required:
+        - data
+      properties:
+        data:
+          $ref: '#/components/schemas/LocationInfo'
+    AppSelfCareSectionsResponse:
+      type: object
+      required:
+        - data
+      properties:
+        data:
+          type: array
+          items:
+            type: object
+            properties:
+              _id:
+                type: string
+                format: uuid
+              title:
+                type: string
+    AppSearchVideoResponse:
+      type: object
+      required:
+        - data
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/SharedVideoDto'
+    AppWatchLaterRequest:
+      type: object
+      required:
+        - taggedAsWatchLater
+      properties:
+        taggedAsWatchLater:
+          type: boolean
+    AppUserVideoInteractionRequest:
+      type: object
+      required:
+        - interactionType
+      properties:
+        interactionType:
+          type: string
+          enum:
+            - startedWatchingAt
+            - stopedWatchingAt
+            - finishedWatchingAt
+    AppSelfCareSubsectionDto:
+      type: object
+      required:
+        - _id
+        - title
+        - bannerUrl
+      properties:
+        _id:
+          type: string
+          format: uuid
+        title:
+          type: string
+        bannerUrl:
+          type: string
+          format: uri
+    HealthFormQuestionResponse:
+      type: object
+      required:
+        - data
+      properties:
+        data:
+          $ref: '#/components/schemas/Question'
+    HealthFormQuestionFlowResponse:
+      type: object
+      required:
+        - data
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/QuestionsFlowType'
+    HealthFormCategoryListResponse:
+      type: object
+      required:
+        - data
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Category'
+    HealthQuestionnaireResponse:
+      type: object
+      required:
+        - data
+      properties:
+        data:
+          $ref: '#/components/schemas/HealthQuestionnaire'
+    SaveHealthQuestionnaireRequest:
+      type: object
+      required:
+        - questionId
+      properties:
+        questionId:
+          type: string
+        answersId:
+          type: array
+          items:
+            type: string
+    UserMedicalRecordGetResponse:
+      type: object
+      required:
+        - data
+      properties:
+        data:
+          type: object
+          required:
+            - fullName
+            - birthday
+            - gender
+            - age
+          properties:
+            fullName:
+              type: string
+            birthday:
+              type: string
+              format: date
+            gender:
+              type: string
+              enum:
+                - male
+                - female
+            age:
+              type: number
+            userMedicalRecord:
+              $ref: '#/components/schemas/UserMedicalRecord'
+    Coupon:
+      type: object
+      required:
+        - code
+        - freeGracePeriod
+        - registrationFeePercentage
+        - installmentPercentage
+        - quantity
+        - duration
+        - redeemExpirationDate
+        - redeemed
+        - redeemedDate
+        - active
+        # - emitter
+        - users
+        - plan
+      properties:
+        code:
+          type: string
+        freeGracePeriod:
+          type: boolean
+        registrationFeePercentage:
+          type: number
+        installmentPercentage:
+          type: number
+        quantity:
+          type: number
+        duration:
+          type: string
+        redeemExpirationDate:
+          type: string
+          format: date
+        redeemed:
+          type: boolean
+        redeemedDate:
+          type: string
+          format: date
+        active:
+          type: boolean
+        emitter:
+          oneOf:
+            - $ref: '#/components/schemas/CouponEmitter'
+            - type: string
+        users:
+          type: array
+          items:
+            oneOf:
+              - $ref: '#/components/schemas/User'
+              - type: string
+        plan:
+          oneOf:
+            - $ref: '#/components/schemas/Plan'
+            - type: string
+    CouponEmitter:
+      type: object
+      required:
+        - name
+        - cnpj
+        - active
+      properties:
+        name:
+          type: string
+        cnpj:
+          type: string
+        active:
+          type: boolean
+    UserMedicalRecord:
+      type: object
+      required:
+        - _id
+        - user
+        - medicalRecord
+        - createdAt
+        - updatedAt
+      properties:
+        _id:
+          type: string
+          format: uuid
+        user:
+          oneOf:
+            - $ref: '#/components/schemas/User'
+            - type: string
+        medicalRecord:
+          type: object
+        createAt:
+          type: string
+          format: date
+        updatedAt:
+          type: string
+          format: date
+    AuthenticatedUser:
+      type: object
+      required:
+        - name
+        - birthday
+        - gender
+        - role
+      properties:
+        name:
+          type: string
+        birthday:
+          type: string
+          format: date
+        gender:
+          type: string
+          enum:
+            - male
+            - female
+        cellphone:
+          type: string
+        email:
+          type: string
+          format: email
+        role:
+          $ref: '#/components/schemas/UserRole'
+    User:
+      type: object
+      required:
+        - _id
+        - name
+        - birthday
+        - gender
+        - cellphone
+        - email
+        - cpf
+        - role
+        - cards
+        - address
+        - termOfUse
+      properties:
+        _id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        birthday:
+          type: string
+          format: date
+        gender:
+          type: string
+          enum:
+            - male
+            - female
+        cpf:
+          type: string
+        cellphone:
+          type: string
+        email:
+          type: string
+          format: email
+        role:
+          $ref: '#/components/schemas/UserRole'
+        cards:
+          type: array
+          items:
+            $ref: '#/components/schemas/UserCard'
+        address:
+          $ref: '#/components/schemas/Address'
+        termOfUse:
+          $ref: '#/components/schemas/TermOfUse'
+    UserRole:
+      type: string
+      enum:
+        - administrador
+        - premium
+        - free
+        - debtor
+    UserCard:
+      type: object
+      required:
+      properties:
+        id:
+          type: string
+        lastNumbers:
+          type: string
+        holderName:
+          type: string
+        expirationDate:
+          type: string
+          format: date
+        paymentNetwork:
+          type: string
+        main:
+          type: string
+        createdAt:
+          type: string
+          format: date
+    Address:
+      type: object
+      required:
+        - zipCode
+        - street
+        - streetNumber
+        - neighborhood
+        - additionalInfo
+        - state
+        - city
+      properties:
+        zipCode:
+          type: string
+          minLength: 8
+          maxLength: 8
+        street:
+          type: string
+        streetNumber:
+          type: number
+        neighborhood:
+          type: string
+        additionalInfo:
+          type: string
+        state:
+          $ref: '#/components/schemas/State'
+        city:
+          type: string
+    State:
+      type: string
+      enum:
+        - AC
+        - AL
+        - AP
+        - AM
+        - BA
+        - CE
+        - DF
+        - ES
+        - GO
+        - MA
+        - MT
+        - MS
+        - MG
+        - PA
+        - PB
+        - PR
+        - PE
+        - PI
+        - RJ
+        - RN
+        - RS
+        - RO
+        - RR
+        - SC
+        - SP
+        - SE
+        - TO
+    TermOfUse:
+      type: object
+      properties:
+        version:
+          type: number
+        content:
+          type: string
+        createdAt:
+          type: string
+          format: date
+        updatedAt:
+          type: string
+          format: date
+    MedicineDoctor:
+      type: object
+      properties:
+        _id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        specialty:
+          type: string
+        crm:
+          type: string
+        profilePhotoUrl:
+          type: string
+          format: uri
+    BodyPart:
+      type: object
+      properties:
+        _id:
+          type: string
+          format: uuid
+        title:
+          type: string
+        subject:
+          type: string
+        bannerUrl:
+          type: string
+          format: uri
+    Diagnostic:
+      type: object
+      properties:
+        _id:
+          type: string
+          format: uuid
+        title:
+          type: string
+        subject:
+          type: string
+        bannerUrl:
+          type: string
+          format: url
+    Section:
+      type: object
+      properties:
+        _id:
+          type: string
+          format: uuid
+        title:
+          type: string
+        subject:
+          type: string
+    Disease:
+      type: object
+      required:
+        - _id
+        - name
+        - tags
+        - createdAt
+        - updatedAt
+      properties:
+        _id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        tags:
+          type: array
+          items:
+            type: string
+        createdAt:
+          type: string
+          format: date
+        updatedAt:
+          type: string
+          format: date
+    Medicine:
+      type: object
+      required:
+        - _id
+        - name
+        - tags
+        - createdAt
+        - updatedAt
+      properties:
+        _id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        tags:
+          type: array
+          items:
+            type: string
+        createdAt:
+          type: string
+          format: date
+        updatedAt:
+          type: string
+          format: date
+    Series:
+      type: object
+      properties:
+        _id:
+          type: string
+          format: uuid
+        title:
+          type: string
+        subject:
+          type: string
+        minAgeRecommendation:
+          type: number
+        maxAgeRecommendation:
+          type: number
+        genderRecommendation:
+          type: array
+          items:
+            type: string
+            enum:
+              - male
+              - female
+        bannerUrl:
+          type: string
+          format: uri
+        relatedTerms:
+          type: array
+          items:
+            type: string
+        sections:
+          type: array
+          items:
+            oneOf:
+              - type: string
+              - $ref: '#/components/schemas/Section'
+    Video:
+      type: object
+      properties:
+        _id:
+          type: string
+          format: uuid
+        title:
+          type: string
+        description:
+          type: string
+        minAgeRecommendation:
+          type: number
+        maxAgeRecommendation:
+          type: number
+        genderRecommendation:
+          type: array
+          items:
+            type: string
+            enum:
+              - male
+              - female
+        views:
+          type: number
+        series:
+          type: array
+          items:
+            oneOf:
+              - type: string
+              - $ref: '#/components/schemas/Series'
+        bodyParts:
+          type: array
+          items:
+            oneOf:
+              - type: string
+              - $ref: '#/components/schemas/BodyPart'
+        diagnostics:
+          type: array
+          items:
+            oneOf:
+              - type: string
+              - $ref: '#/components/schemas/Diagnostic'
+        sections:
+          type: array
+          items:
+            oneOf:
+              - type: string
+              - $ref: '#/components/schemas/Section'
+        thumbnailUrl:
+          type: string
+          format: uri
+        url:
+          type: string
+          format: uri
+        relatedTerms:
+          type: array
+          items:
+            type: string
+        relatedMedicineDoctors:
+          type: array
+          items:
+            oneOf:
+              - type: string
+              - $ref: '#/components/schemas/MedicineDoctor'
+        premium:
+          type: boolean
+    Plan:
+      type: object
+      required:
+        - _id
+        - name
+        - value
+        - months
+        - registrationFee
+        - type
+        - createdAt
+        - updatedAt
+      properties:
+        _id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        value:
+          type: number
+        months:
+          type: number
+        registrationFee:
+          type: number
+        type:
+          type: string
+          enum:
+            - individual
+            - family
+        createdAt:
+          type: string
+          format: date
+        updatedAt:
+          type: string
+          format: date
+    Payment:
+      type: object
+      required:
+        - _id
+        - user
+        - plan
+        - transactionId
+        - registrationFee
+        - discountOnRegistrationFee
+        - value
+        - discountOnValue
+        - total
+        - installment
+        - scheduledDate
+        - sentDate
+        - receivedDate
+        - status
+        - chargingAttempt
+        - errorMessage
+        - createdAt
+        - updatedAt
+      properties:
+        _id:
+          type: string
+          format: uuid
+        user:
+          oneOf:
+            - type: string
+            - $ref: '#/components/schemas/User'
+        plan:
+          oneOf:
+            - type: string
+            - $ref: '#/components/schemas/Plan'
+        transactionId:
+          type: number
+        discountOnRegistrationFee:
+          type: number
+        value:
+          type: number
+        discountOnValue:
+          type: number
+        total:
+          type: number
+        installment:
+          type: number
+        scheduledDate:
+          type: string
+          format: date
+        sentDate:
+          type: string
+          format: date
+        receivedDate:
+          type: string
+          format: date
+        status:
+          $ref: '#/components/schemas/PaymentStatus'
+        chargingAttempt:
+          type: number
+        errorMessage:
+          type: string
+        createdAt:
+          type: string
+          format: date
+        updatedAt:
+          type: string
+          format: date
+    PaymentStatus:
+      type: string
+      enum:
+        - scheduled
+        - inProgress
+        - done
+        - refunded
+        - error
+        - debt
+    City:
+      type: object
+      required:
+        - id
+        - name
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+    LocationInfo:
+      type: object
+      required:
+        - zipCode
+        - state
+        - city
+        - street
+        - neighborhood
+      properties:
+        zipCode:
+          type: string
+        state:
+          type: string
+        city:
+          type: string
+        street:
+          type: string
+        neighborhood:
+          type: string
+    Question:
+      type: object
+      required:
+        - _id
+        - category
+        - description
+        - type
+        - answerType
+        - answers
+        - isHeight
+        - isWeight
+        - age
+        - imc
+        - autoComplete
+        - fill
+        - createdAt
+        - updatedAt
+      properties:
+        _id:
+          type: string
+          format: uuid
+        category:
+          $ref: '#/components/schemas/Category'
+        description:
+          type: string
+        type:
+          $ref: '#/components/schemas/QuestionType'
+        answerType:
+          $ref: '#/components/schemas/AnswerType'
+        answers:
+          type: array
+          items:
+            $ref: '#/components/schemas/Answer'
+        isHeight:
+          type: boolean
+        isWeight:
+          type: boolean
+        age:
+          $ref: '#/components/schemas/ConditionObjectType'
+        imc:
+          $ref: '#/components/schemas/ConditionObjectType'
+        autoComplete:
+          type: object
+          required:
+            - label
+            - addedDescription
+            - collectionName
+            - defaultAnswer
+          properties:
+            label:
+              type: string
+            addedDescription:
+              type: string
+            collectionName:
+              type: string
+            defaultAnswer:
+              type: string
+        fill:
+          type: object
+          required:
+            - label
+            - mask
+            - keyboardType
+            - disabled
+            - value
+          properties:
+            label:
+              type: string
+            mask:
+              type: string
+            keyboardType:
+              type: string
+            disabled:
+              type: string
+            value:
+              type: string
+        createdAt:
+          type: string
+          format: date
+        updatedAt:
+          type: string
+          format: date
+    QuestionType:
+      type: string
+      enum:
+        - COMPLEMENTAR
+        - ESSENCIAL
+    Answer:
+      type: object
+      required:
+        - _id
+        - description
+        - tags
+        - supplementaryQuestions
+        - medicalRecord
+        - createdAt
+        - updatedAt
+      properties:
+        _id:
+          type: string
+          format: uuid
+        description:
+          type: string
+        tags:
+          type: array
+          items:
+            type: string
+        supplementaryQuestions:
+          type: array
+          items:
+            type: string
+        medicalRecord:
+          type: object
+        createdAt:
+          type: string
+          format: date
+        updatedAt:
+          type: string
+          format: date
+    AnswerType:
+      type: string
+      enum:
+        - MULTIPLAESCOLHA
+        - ESCOLHA
+        - PREENCHIMENTO
+        - AUTOMATICO
+        - AUTOCOMPLETE
+    HealthQuestionnaire:
+      type: object
+      required:
+        - _id
+        - user
+        - questionFlow
+      properties:
+        _id:
+          type: string
+          format: uuid
+        user:
+          oneOf:
+            - $ref: '#/components/schemas/User'
+            - type: string
+        questionFlow:
+          type: array
+          items:
+            $ref: '#/components/schemas/UserQuestionFlow'
+        createdAt:
+          type: string
+          format: date
+        updatedAt:
+          type: string
+          format: date
+    UserQuestionFlow:
+      type: object
+      required:
+        - category
+        - questionsId
+        - answeredQuestions
+        - isCompleted
+        - wasAnsweredOnce
+        - lastAnsweredQuestion
+      properties:
+        category:
+          $ref: '#/components/schemas/Category'
+        questionsId:
+          type: array
+          items:
+            type: string
+        answeredQuestions:
+          type: array
+          items:
+            $ref: '#/components/schemas/UserQuestionAnswered'
+        isCompleted:
+          type: boolean
+        wasAnsweredOnce:
+          type: boolean
+        lastAnsweredQuestion:
+          type: string
+          format: uuid
+    UserQuestionAnswered:
+      type: object
+      required:
+        - questionId
+        - description
+        - isHeight
+        - isWeight
+        - answers
+      properties:
+        questionId:
+          type: string
+          format: uuid
+        description:
+          type: string
+        isHeight:
+          type: boolean
+        isWeight?:
+          type: boolean
+        answers:
+          type: array
+          items:
+            $ref: '#/components/schemas/SelectedAnswer'
+    SelectedAnswer:
+      type: object
+      required:
+        - answerId
+        - answer
+        - tags
+        - medicalRecord
+      properties:
+        answerId:
+          type: string
+          format: uuid
+        answer:
+          type: string
+        tags:
+          type: array
+          items:
+            type: string
+        medicalRecord:
+          type: object
+    Category:
+      type: object
+      required:
+        - _id
+        - description
+        - createdAt
+        - updatedAt
+      properties:
+        _id:
+          type: string
+          format: uuid
+        description:
+          type: string
+        createdAt:
+          type: string
+          format: date
+        updatedAt:
+          type: string
+          format: date
+    QuestionsFlowType:
+      type: object
+      required:
+        - category
+        - questionsId
+      properties:
+        category:
+          $ref: '#/components/schemas/Category'
+        questionsId:
+          type: array
+          items:
+            type: string
+    ConditionObjectType:
+      type: object
+      required:
+        - value
+        - condition
+      properties:
+        value:
+          type: array
+          items:
+            type: number
+        condition:
+          $ref: '#/components/schemas/ConditionType'
+    ConditionType:
+      type: string
+      enum:
+        - MAIOR
+        - MENOR
+        - IGUAL
+        - ENTRE
+    Error:
+      type: object
+      required:
+        - message
+      properties:
+        message:
+          type: string
