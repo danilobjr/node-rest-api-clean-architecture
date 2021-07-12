@@ -1,67 +1,48 @@
-# Ajuda Saude API
+# node-rest-api-clean-architecture
 
-> Description
+> This is a work in progress
 
 ## Table of Content
 
 - Requirements
   - Node.js
   - MongoDB
-  - Redis
-  - SMTP
-  - .env file
+  - Docker
+  - Make
 - Running
-  - Locally
-  - Staging
-  - Production
 - Architecture
   - Overview
-  - Example: how to add a new use case?
 - Docs
   - Swagger (api.yml)
-  - Postman (ajuda saude team)
-- Deploy
-- Database
-  - Restore backup
-  - Modeling - Denormalization
 - Troubleshooting
 
-## Deploy (staging)
+## Running
 
-- Prepare `staging` branch
-- Access AWS EC2 through SSH
-- Access project foler
-- Pull `staging` branch
+Install dependencies
 
-**Note: always check with `git status` if you are on correct EC2 machine**
-
-## Database
-
-### Restore backup
-
-Run local containers
-
+```bash
+yarn install
 ```
+
+Execute docker containers through Make. This will install Docker image and make them interact each other via Docker Compose.
+
+```bash
 make dev
 ```
 
-Check if server is running
+Check application logs on terminal
 
-```
+```bash
 make logs
 ```
 
-Remove local `ajuda-saude-dev` database
+Stop all containers
 
-```
-docker exec mongo sh -c 'mongo ajuda-saude-dev -u <user> -p <password> --authenticationDatabase admin --eval "db.dropDatabase()"'
+```bash
+make down
 ```
 
-Restore backup on local database
-
-```
-docker exec -i mongo sh -c 'mongorestore --uri="mongodb://<user>:<password>@0.0.0.0:27017/?authSource=admin&readPreference=primary" --nsFrom="ajuda-saude.*" --nsTo="ajuda-saude-dev.*" --archive' < mongodump-YYYY-MM-DD-HH-mm.backup
-```
+## Database
 
 ### Modeling - Denormalization
 
@@ -70,4 +51,4 @@ Motivation: [Populate - Query conditions](https://mongoosejs.com/docs/populate.h
 ## Troubleshooting
 
 - Check express.js logs with `make logs`
-- Use postman for direct requests
+- Use postman (or something like this) for direct requests
